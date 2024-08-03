@@ -18,13 +18,13 @@ USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTM
 ROBOTSTXT_OBEY = True
 
 # Configure a delay for requests for the same website
-DOWNLOAD_DELAY = 2  # 2 seconds delay
+DOWNLOAD_DELAY = 0.5  # 2 seconds delay
 
 # Enable and configure the AutoThrottle extension
 AUTOTHROTTLE_ENABLED = True
-AUTOTHROTTLE_START_DELAY = 1
-AUTOTHROTTLE_MAX_DELAY = 10
-AUTOTHROTTLE_TARGET_CONCURRENCY = 1.0
+# AUTOTHROTTLE_START_DELAY = 1
+# AUTOTHROTTLE_MAX_DELAY = 10
+# AUTOTHROTTLE_TARGET_CONCURRENCY = 1.0
 
 # Enable and configure HTTP caching
 HTTPCACHE_ENABLED = True
