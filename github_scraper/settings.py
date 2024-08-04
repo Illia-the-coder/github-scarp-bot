@@ -18,17 +18,45 @@ USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTM
 ROBOTSTXT_OBEY = True
 
 # Configure a delay for requests for the same website
-DOWNLOAD_DELAY = 0.5  # 2 seconds delay
+DOWNLOAD_DELAY = 2  # 2 seconds delay
 
-# Enable and configure the AutoThrottle extension
+
+# Disable cookies (enabled by default)
+COOKIES_ENABLED = False
+
+# Enable and configure the AutoThrottle extension (disabled by default)
 AUTOTHROTTLE_ENABLED = True
-# AUTOTHROTTLE_START_DELAY = 1
-# AUTOTHROTTLE_MAX_DELAY = 10
-# AUTOTHROTTLE_TARGET_CONCURRENCY = 1.0
+AUTOTHROTTLE_START_DELAY = 1
+AUTOTHROTTLE_MAX_DELAY = 10
+AUTOTHROTTLE_TARGET_CONCURRENCY = 2.0
+AUTOTHROTTLE_DEBUG = False
 
-# Enable and configure HTTP caching
+# Enable and configure HTTP caching (disabled by default)
 HTTPCACHE_ENABLED = True
 HTTPCACHE_EXPIRATION_SECS = 0
 HTTPCACHE_DIR = 'httpcache'
 HTTPCACHE_IGNORE_HTTP_CODES = []
 HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+
+# Retry middleware settings
+RETRY_ENABLED = True
+RETRY_TIMES = 5  # Adjust based on tolerance for rate limiting
+RETRY_HTTP_CODES = [429, 500, 502, 503, 504, 522, 524, 408, 403]
+
+# Download timeout
+DOWNLOAD_TIMEOUT = 30
+
+# Rotating user agents middleware
+DOWNLOADER_MIDDLEWARES = {
+    'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
+    'scrapy_user_agents.middlewares.RandomUserAgentMiddleware': 400,
+    'scrapy.downloadermiddlewares.retry.RetryMiddleware': 550,
+}
+
+# Configure item pipelines (if needed)
+# ITEM_PIPELINES = {
+#    'github_scraper.pipelines.SomePipeline': 300,
+# }
+
+# Logging configuration
+LOG_LEVEL = 'INFO'
