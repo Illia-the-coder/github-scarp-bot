@@ -1,5 +1,14 @@
 import scrapy
 import requests
+import re
+
+def parse_count(value):
+    if not value:
+        return 0
+    value = value.strip().lower()
+    if 'k' in value:
+        return int(float(value.replace('k', '')) * 1000)
+    return int(value.replace(',', ''))
 
 class GithubSpider(scrapy.Spider):
     name = 'github_scraper'
@@ -28,9 +37,9 @@ class GithubSpider(scrapy.Spider):
             'email': response.xpath('//a[contains(@href, "mailto:")]/@href').get(default='').replace('mailto:', ''),
             'bio': response.xpath('//div[@class="p-note user-profile-bio mb-3 js-user-profile-bio f4"]/div/text()').get(default='').strip(),
             'location': response.xpath('//li[@itemprop="homeLocation"]/span/text()').get(default='').strip(),
-            'public_repos': int(response.xpath('(//span[@class="Counter"])[1]/text()').get(default='0').strip()),
-            'stars': response.xpath('//a[contains(@href, "?tab=stars")]/span[@class="Counter"]/text()').get(default='0').strip(),
+            'public_repos': parse_count(response.xpath('(//span[@class="Counter"])[1]/text()').get(default='0')),
+            'stars': parse_count(response.xpath('//a[contains(@href, "?tab=stars")]/span[@class="Counter"]/text()').get(default='0')),
             'organizations': len(response.xpath('//a[@data-hovercard-type="organization"]')),
-            'followers': int(response.xpath(f'//a[contains(@href, "?tab=followers")]/span/text()').get(default='0').replace(',', '')),
-            'following': int(response.xpath(f'//a[contains(@href, "?tab=following")]/span/text()').get(default='0').replace(',', '')),
+            'followers': parse_count(response.xpath('//a[contains(@href, "?tab=followers")]/span/text()').get(default='0')),
+            'following': parse_count(response.xpath('//a[contains(@href, "?tab=following")]/span/text()').get(default='0')),
         }
