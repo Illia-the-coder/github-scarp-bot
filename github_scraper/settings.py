@@ -18,7 +18,7 @@ USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTM
 ROBOTSTXT_OBEY = False
 
 # Configure a delay for requests for the same website
-DOWNLOAD_DELAY = 2  # 2 seconds delay
+# DOWNLOAD_DELAY = 2  # 2 seconds delay
 
 # Enable and configure the AutoThrottle extension
 AUTOTHROTTLE_ENABLED = True
