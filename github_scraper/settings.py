@@ -15,10 +15,10 @@ DEFAULT_REQUEST_HEADERS = {
 USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-ROBOTSTXT_OBEY = True
+# ROBOTSTXT_OBEY = False
 
 # Configure a delay for requests for the same website
-DOWNLOAD_DELAY = 2  # 2 seconds delay
+DOWNLOAD_DELAY = 10  # 2 seconds delay
 
 
 # Disable cookies (enabled by default)
@@ -40,18 +40,18 @@ HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
 # Retry middleware settings
 RETRY_ENABLED = True
-RETRY_TIMES = 5  # Adjust based on tolerance for rate limiting
+RETRY_TIMES = 10  # Adjust based on tolerance for rate limiting
 RETRY_HTTP_CODES = [429, 500, 502, 503, 504, 522, 524, 408, 403]
 
 # Download timeout
 DOWNLOAD_TIMEOUT = 30
 
 # Rotating user agents middleware
-DOWNLOADER_MIDDLEWARES = {
-    'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
-    'scrapy_user_agents.middlewares.RandomUserAgentMiddleware': 400,
-    'scrapy.downloadermiddlewares.retry.RetryMiddleware': 550,
-}
+# DOWNLOADER_MIDDLEWARES = {
+#     'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
+#     'scrapy_user_agents.middlewares.RandomUserAgentMiddleware': 400,
+#     'scrapy.downloadermiddlewares.retry.RetryMiddleware': 550,
+# }
 
 # Configure item pipelines (if needed)
 # ITEM_PIPELINES = {
@@ -59,4 +59,4 @@ DOWNLOADER_MIDDLEWARES = {
 # }
 
 # Logging configuration
-LOG_LEVEL = 'INFO'
+# LOG_LEVEL = 'INFO'

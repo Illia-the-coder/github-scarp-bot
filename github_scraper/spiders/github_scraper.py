@@ -12,7 +12,7 @@ class GithubSpider(scrapy.Spider):
             response.raise_for_status()
             urls = response.text.splitlines()
             for url in urls:
-                yield scrapy.Request(url=url.strip(), callback=self.parse)
+                yield scrapy.Request(url=url.strip().replace('https://github.com/https://github.com/','https://github.com/'), callback=self.parse)
         except requests.RequestException as e:
             self.logger.error(f"Error fetching URLs: {e}")
 
@@ -27,9 +27,9 @@ class GithubSpider(scrapy.Spider):
             'email': response.xpath('//a[contains(@href, "mailto:")]/@href').get(default='').replace('mailto:', ''),
             'bio': response.xpath('//div[@class="p-note user-profile-bio mb-3 js-user-profile-bio f4"]/div/text()').get(default='').strip(),
             'location': response.xpath('//li[@itemprop="homeLocation"]/span/text()').get(default='').strip(),
-            'public_repos': response.xpath('(//span[@class="Counter"])[1]/text()').get(default='0').strip(),
+            'public_repos': int(response.xpath('(//span[@class="Counter"])[1]/text()').get(default='0').strip()),
             'stars': response.xpath('//a[contains(@href, "?tab=stars")]/span[@class="Counter"]/text()').get(default='0').strip(),
             'organizations': len(response.xpath('//a[@data-hovercard-type="organization"]')),
-            'followers': response.xpath('//a[contains(@href, "followers")]/span[@class="Counter"]/text()').get(default='0').strip(),
-            'following': response.xpath('//a[contains(@href, "following")]/span[@class="Counter"]/text()').get(default='0').strip(),
+            'followers': int(response.xpath('//a[contains(@href, "followers")]/svg/span/text()').get(default='0').strip()),
+            'following': int(response.xpath('//a[contains(@href, "following")]/svg/span[@class="Counter"]/text()').get(default='0').strip()),
         }
