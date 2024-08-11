@@ -1,9 +1,6 @@
 import scrapy
 import requests
 
-
-
-
 class GithubSpider(scrapy.Spider):
     name = 'github_scraper'
     allowed_domains = ['github.com']
@@ -21,19 +18,27 @@ class GithubSpider(scrapy.Spider):
 
     def parse(self, response):
         nickname = response.xpath('//span[@class="p-nickname vcard-username d-block"]/text()').get(default='').strip()
+        
+        vcard_details = response.xpath('//ul[@class="vcard-details"]')
+        mails = [x for x in vcard_details.xpath('//a/@href').getall() if x.startswith('mailto:')]
+        
+        def extract_int(xpath):
+            value = response.xpath(xpath).get(default='0').strip().replace(',', '')
+            return int(value) if value.isdigit() else 0
+        
         yield {
             'username': response.xpath('//span[@class="p-name vcard-fullname d-block overflow-hidden"]/text()').get(default='').strip(),
             'nickname': nickname,
-            'twitter': response.xpath('//a[contains(@href, "twitter.com")]/@href').get(default=''),
-            'instagram': response.xpath('//a[contains(@href, "instagram.com")]/@href').get(default=''),
-            'linkedin': response.xpath('//a[contains(@href, "linkedin.com")]/@href').get(default=''),
-            'website': response.xpath('//li[@itemprop="url"]/a/text()').get(default='').strip(),
-            'e-mail': [x for x in response.xpath('//a/@href').getall() if x.startswith('mailto:')] or '',
+            'twitter': vcard_details.xpath('//a[contains(@href, "twitter.com") or contains(@href, "x.com") or contains(@href, "https://x.com") or contains(@href, "https://twitter.com") or contains(@href, "www.twitter.com")]/@href').get(default=''),
+            'instagram': vcard_details.xpath('//a[contains(@href, "instagram.com")]/@href').get(default=''),
+            'linkedin': vcard_details.xpath('//a[contains(@href, "linkedin.com")]/@href').get(default=''),
+            'website': vcard_details.xpath('//li[@itemprop="url"]/a/text()').getall(),
+            'e-mail': mails[0] if len(mails) else '',
             'bio': response.xpath('//div[@class="p-note user-profile-bio mb-3 js-user-profile-bio f4"]/div/text()').get(default='').strip(),
-            'location': response.xpath('//li[@itemprop="homeLocation"]/span/text()').get(default='').strip(),
-            'public_repos': response.xpath('(//span[@class="Counter"])[1]/text()').get(default='0'),
-            'stars': response.xpath('//a.Link--primary[contains(@href, "?tab=stars")]/span[@class="Counter"]/text()').get(default='0'),
-            'organizations': len(response.xpath('//a[@data-hovercard-type="organization"]')),
-            'followers': response.xpath('//a[contains(@href, "?tab=followers")]/span/text()').get(default='0'),
-            'following': response.xpath('//a[contains(@href, "?tab=following")]/span/text()').get(default='0'),
+            'location': vcard_details.xpath('//li[@itemprop="homeLocation"]/span/text()').get(default='').strip(),
+            'public_repos': extract_int('(//span[@class="Counter"])[1]/text()'),
+            'stars': extract_int('//a[contains(@href, "?tab=stars")]/span[@class="Counter"]/text()'),
+            'organizations': int(float(response.xpath('count(//a[@data-hovercard-type="organization"])').get(default='0'))),
+            'followers': extract_int('//a[contains(@href, "?tab=followers")]/span/text()'),
+            'following': extract_int('//a[contains(@href, "?tab=following")]/span/text()'),
         }

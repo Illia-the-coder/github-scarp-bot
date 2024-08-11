@@ -20,6 +20,10 @@ ROBOTSTXT_OBEY = False
 # Configure a delay for requests for the same website
 DOWNLOAD_DELAY = 0.5  # 2 seconds delay
 
+# RETRY_ENABLED = True
+# RETRY_TIMES = 3
+# RETRY_HTTP_CODES = [429]
+
 # Enable and configure the AutoThrottle extension
 # AUTOTHROTTLE_ENABLED = True
 # AUTOTHROTTLE_START_DELAY = 1
