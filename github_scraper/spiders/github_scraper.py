@@ -1,6 +1,28 @@
 import scrapy
 import requests
 
+def text_to_int(text):
+    # Clean the input by removing spaces and other non-numeric characters (except for '.', 'k', 'M', etc.)
+    clean_text = text.strip().lower().replace('+', '').replace(',', '')
+
+    # Mapping suffixes to their respective multipliers
+    suffixes = {'k': 10**3, 'm': 10**6, 'b': 10**9}
+
+    try:
+        # If the text can be directly converted to an integer, do so
+        return int(clean_text)
+    except ValueError:
+        # If there is a suffix, handle it
+        for suffix, multiplier in suffixes.items():
+            if clean_text.endswith(suffix):
+                try:
+                    # Convert the part before the suffix to a float, multiply by the appropriate value
+                    return int(float(clean_text[:-1]) * multiplier)
+                except ValueError:
+                    return 0  # In case of any error during conversion
+
+        # If it doesn't match any expected format, return 0
+        return 0
 
 
 
@@ -34,9 +56,9 @@ class GithubSpider(scrapy.Spider):
             'e-mail': mails[0] if len(mails) else '',
             'bio': response.xpath('//div[@class="p-note user-profile-bio mb-3 js-user-profile-bio f4"]/div/text()').get(default='').strip(),
             'location': vcard_details.xpath('//li[@itemprop="homeLocation"]/span/text()').get(default='').strip(),
-            'public_repos':  response.xpath('(//span[@class="Counter"])[1]/text()').get(default='0'),
-            'stars': response.xpath('//a[contains(@href, "?tab=stars")]/span[@class="Counter"]/text()').get(default='0'),
+            'public_repos':   text_to_int(response.xpath('(//span[@class="Counter"])[1]/text()').get(default='0')),
+            'stars':  text_to_int(response.xpath('//a[contains(@href, "?tab=stars")]/span[@class="Counter"]/text()').get(default='0')),
             'organizations': len(response.xpath('//a[@data-hovercard-type="organization"]')),
-            'followers': response.xpath('//a[contains(@href, "?tab=followers")]/span/text()').get(default='0'),
-            'following': response.xpath('//a[contains(@href, "?tab=following")]/span/text()').get(default='0'),
+            'followers': text_to_int(response.xpath('//a[contains(@href, "?tab=followers")]/span/text()').get(default='0')),
+            'following':  text_to_int(response.xpath('//a[contains(@href, "?tab=following")]/span/text()').get(default='0')),
         }
