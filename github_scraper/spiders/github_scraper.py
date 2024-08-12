@@ -51,7 +51,7 @@ class GithubSpider(scrapy.Spider):
             'instagram': response.xpath('//li[@itemprop="social"]/a[contains(@href, "instagram.com")]/@href').get(default=''),
             'linkedin': response.xpath('//li[@itemprop="social"]/a[contains(@href, "linkedin.com")]/@href').get(default=''),
             'website': response.xpath('//li[@itemprop="url"]/a/@href').getall(),
-            'e-mail': response.xpath('/html/body/div[1]/div[5]/main/div/div/div[1]/div/div/div[3]/div[2]/ul/li/a[contains(@href, "mailto")]/@href').get(default=''), ,
+            'e-mail': response.xpath('/html/body/div[1]/div[5]/main/div/div/div[1]/div/div/div[3]/div[2]/ul/li/a[contains(@href, "mailto")]/@href').get(default=''),
             'location': response.xpath('//li[@itemprop="homeLocation"]/span/text()').get(default='').strip(),
             
             'bio': response.xpath('//div[@class="p-note user-profile-bio mb-3 js-user-profile-bio f4"]/div/text()').get(default='').strip(),
