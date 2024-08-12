@@ -44,8 +44,8 @@ class GithubSpider(scrapy.Spider):
     def parse(self, response):
         nickname = response.xpath('//span[@class="p-nickname vcard-username d-block"]/text()').get(default='').strip()
         
-        vcard_details = response.xpath('//ul[@class="vcard-details"]')
-        mails = [x for x in vcard_details.xpath('//a/@href').getall() if x.startswith('mailto:')]
+        vcard_details = response.xpath('//div[@class="js-profile-editable-replacer"]/ul[@class="vcard-details"]')
+        
         yield {
             'username': response.xpath('//span[@class="p-name vcard-fullname d-block overflow-hidden"]/text()').get(default='').strip(),
             'nickname': nickname,
@@ -53,7 +53,7 @@ class GithubSpider(scrapy.Spider):
             'instagram': vcard_details.xpath('//a[contains(@href, "instagram.com")]/@href').get(default=''),
             'linkedin': vcard_details.xpath('//a[contains(@href, "linkedin.com")]/@href').get(default=''),
             'website': vcard_details.xpath('//li[@itemprop="url"]/a/text()').getall(),
-            'e-mail': mails[0] if len(mails) else '',
+            'e-mail': [x for x in vcard_details.xpath('//li[@itemprop="email"]/a/@href').getall() if x.startswith('mailto:')],
             'bio': response.xpath('//div[@class="p-note user-profile-bio mb-3 js-user-profile-bio f4"]/div/text()').get(default='').strip(),
             'location': vcard_details.xpath('//li[@itemprop="homeLocation"]/span/text()').get(default='').strip(),
             'public_repos':   text_to_int(response.xpath('(//span[@class="Counter"])[1]/text()').get(default='0')),
