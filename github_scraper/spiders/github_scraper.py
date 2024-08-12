@@ -1,6 +1,9 @@
 import scrapy
 import requests
 
+
+
+
 class GithubSpider(scrapy.Spider):
     name = 'github_scraper'
     allowed_domains = ['github.com']
@@ -21,11 +24,6 @@ class GithubSpider(scrapy.Spider):
         
         vcard_details = response.xpath('//ul[@class="vcard-details"]')
         mails = [x for x in vcard_details.xpath('//a/@href').getall() if x.startswith('mailto:')]
-        
-        def extract_int(xpath):
-            value = response.xpath(xpath).get(default='0').strip().replace(',', '')
-            return int(value) if value.isdigit() else 0
-        
         yield {
             'username': response.xpath('//span[@class="p-name vcard-fullname d-block overflow-hidden"]/text()').get(default='').strip(),
             'nickname': nickname,
@@ -36,9 +34,9 @@ class GithubSpider(scrapy.Spider):
             'e-mail': mails[0] if len(mails) else '',
             'bio': response.xpath('//div[@class="p-note user-profile-bio mb-3 js-user-profile-bio f4"]/div/text()').get(default='').strip(),
             'location': vcard_details.xpath('//li[@itemprop="homeLocation"]/span/text()').get(default='').strip(),
-            'public_repos': extract_int('(//span[@class="Counter"])[1]/text()'),
-            'stars': extract_int('//a[contains(@href, "?tab=stars")]/span[@class="Counter"]/text()'),
-            'organizations': int(float(response.xpath('count(//a[@data-hovercard-type="organization"])').get(default='0'))),
-            'followers': extract_int('//a[contains(@href, "?tab=followers")]/span/text()'),
-            'following': extract_int('//a[contains(@href, "?tab=following")]/span/text()'),
+            'public_repos':  response.xpath('(//span[@class="Counter"])[1]/text()').get(default='0'),
+            'stars': response.xpath('//a[contains(@href, "?tab=stars")]/span[@class="Counter"]/text()').get(default='0'),
+            'organizations': len(response.xpath('//a[@data-hovercard-type="organization"]')),
+            'followers': response.xpath('//a[contains(@href, "?tab=followers")]/span/text()').get(default='0'),
+            'following': response.xpath('//a[contains(@href, "?tab=following")]/span/text()').get(default='0'),
         }
